@@ -7,8 +7,10 @@ var gem_width = 8;
 var gem_length = 8;
 var gem_pixel = 32;
 var color;
+var score = 0;
 
-var game = new Phaser.Game(gem_width*gem_pixel, gem_length*gem_pixel, Phaser.CANVAS, 'phaser-example', { preload: preload, create: create });
+
+var game = new Phaser.Game(gem_width*gem_pixel, gem_length*gem_pixel, Phaser.CANVAS, 'phaser-example', { preload: preload, create: create, update: update });
 
 var field = new Array();
 for (i = 0; i < gem_width; i += 1) {
@@ -23,6 +25,35 @@ var sel_gem = function(gem_arr){
   return gem_arr[gem_id];
 };
 
+function change(first_i, first_j, sec_i, sec_j) {
+  tmp = field[first_i][first_j].clr;
+  field[first_i][first_j].clr = field[sec_i][sec_j].clr;
+  field[sec_i][sec_j].clr = tmp;
+
+  field[first_i][first_j].stn.x = sec_j * gem_pixel;
+  field[first_i][first_j].stn.y = sec_i * gem_pixel;
+  field[sec_i][sec_j].stn.x = first_j * gem_pixel;
+  field[sec_i][sec_j].stn.y = first_i * gem_pixel;
+
+  /*for ( i = 1; i < gem_width - 1; i += 1) {
+    for ( j = 1; j < gem_length - 1; j += 1) {
+      if ( (field[i-1][j] == field[i][j] == field[i+1][j]) || (field[i][j-1] == field[i][j] == field[i][j+1]) ) {
+        field[i][j] = gem[0];
+      }
+    }
+  }*/
+};
+
+function pregame(timer) {
+  var rand_i = Math.floor( Math.random * gem_width );
+  var rand_j = Math.floor( Math.random * gem_length );
+  //setInterval(change(rand_i,rand_j,rand_i+1,rand_j),timer);
+  setInterval(function () {
+    change(rand_i,rand_j,rand_i+1,rand_j);
+  },timer);
+  console.log(1);
+}
+
 /*Предзагрузка картинок*/
 function preload() {
   game.load.image('red','img/red.png');
@@ -34,36 +65,50 @@ function preload() {
 };
 /*Начальное заполнение поля*/
 function create() {
-  for ( i = 0; i < gem_width; i+=1 ) {
+  for ( i = 0; i < gem_width; i += 1 ) {
     for (var j = 0; j < gem_length; j += 1){
+    //  var cat = new Object();
       if ( i < 2 && j < 2) {
-        field[i][j] = sel_gem(gem_arr);
-        color = field[i][j];
-        game.add.sprite(i*gem_pixel,j*gem_pixel,color);
+        field[i][j] = {
+          clr: sel_gem(gem_arr)
+        }
+        field[i][j].stn = game.add.sprite(i*gem_pixel,j*gem_pixel,field[i][j].clr);
       }
       else if (i < 2 && j >= 2) {
         do{
-          field[i][j] = sel_gem(gem_arr);
-          color = field[i][j];
+          field[i][j] = {
+            clr: sel_gem(gem_arr)
+          }
         }
-        while (field[i][j] == field[i][j-1] && field[i][j-1] == field[i][j-2]);
-        game.add.sprite(i*gem_pixel,j*gem_pixel,color);
+        while (field[i][j].clr == field[i][j-1].clr && field[i][j-1].clr == field[i][j-2].clr);
+        field[i][j].stn = game.add.sprite(i*gem_pixel,j*gem_pixel,field[i][j].clr);
       }
       else if (i >= 2 && j < 2) {
         do{
-          field[i][j] = sel_gem(gem_arr);
-          color = field[i][j];
+          field[i][j] = {
+            clr: sel_gem(gem_arr)
+          }
         }
-        while (field[i][j] == field[i-1][j] && field[i-1][j] == field[i-2][j]);
-        game.add.sprite(i*gem_pixel,j*gem_pixel,color);
+        while (field[i][j].clr == field[i-1][j].clr && field[i-1][j].clr == field[i-2][j].clr);
+        field[i][j].stn = game.add.sprite(i*gem_pixel,j*gem_pixel,field[i][j].clr);
       }
       else {
         do {
-          field[i][j] = sel_gem(gem_arr);
-          color = field[i][j];
-        } while ((field[i][j] == field[i-1][j] && field[i-1][j] == field[i-2][j])||(field[i][j] == field[i][j-1] && field[i][j-1] == field[i][j-2]));
-        game.add.sprite(i*gem_pixel,j*gem_pixel,color);
+          field[i][j] = {
+            clr: sel_gem(gem_arr)
+          }
+        } while ((field[i][j].clr == field[i-1][j].clr && field[i-1][j].clr == field[i-2][j].clr)||(field[i][j].clr == field[i][j-1].clr && field[i][j-1].clr == field[i][j-2].clr));
+        field[i][j].stn = game.add.sprite(i*gem_pixel,j*gem_pixel,field[i][j].clr);
       }
+      console.log(field[i][j].clr, i, j);
     }
   }
+};
+
+function update() {
+  var rand_i = Math.floor( Math.random() * (gem_width-1) );
+  var rand_j = Math.floor( Math.random() * (gem_length-1) );
+  console.log(rand_i, rand_j);
+  //pregame(5000);
+  change(rand_i,rand_j,rand_i+1,rand_j);
 };
