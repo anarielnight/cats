@@ -35,7 +35,13 @@ function change(first_i, first_j, sec_i, sec_j) {
   field[sec_i][sec_j].stn.x = first_j * gem_pixel;
   field[sec_i][sec_j].stn.y = first_i * gem_pixel;
 
-  /*for ( i = 1; i < gem_width - 1; i += 1) {
+
+  tmp = field[first_i][first_j].stn;
+  field[first_i][first_j].stn = field[sec_i][sec_j].stn;
+  field[sec_i][sec_j].stn = tmp;
+
+
+/*  for ( i = 1; i < gem_width - 1; i += 1) {
     for ( j = 1; j < gem_length - 1; j += 1) {
       if ( (field[i-1][j] == field[i][j] == field[i+1][j]) || (field[i][j-1] == field[i][j] == field[i][j+1]) ) {
         field[i][j] = gem[0];
@@ -69,15 +75,17 @@ function create() {
     for (var j = 0; j < gem_length; j += 1){
     //  var cat = new Object();
       if ( i < 2 && j < 2) {
+        color = sel_gem(gem_arr);
         field[i][j] = {
-          clr: sel_gem(gem_arr)
+          clr: color
         }
         field[i][j].stn = game.add.sprite(i*gem_pixel,j*gem_pixel,field[i][j].clr);
       }
       else if (i < 2 && j >= 2) {
         do{
+          color = sel_gem(gem_arr);
           field[i][j] = {
-            clr: sel_gem(gem_arr)
+            clr: color
           }
         }
         while (field[i][j].clr == field[i][j-1].clr && field[i][j-1].clr == field[i][j-2].clr);
@@ -85,8 +93,9 @@ function create() {
       }
       else if (i >= 2 && j < 2) {
         do{
+          color = sel_gem(gem_arr);
           field[i][j] = {
-            clr: sel_gem(gem_arr)
+            clr: color
           }
         }
         while (field[i][j].clr == field[i-1][j].clr && field[i-1][j].clr == field[i-2][j].clr);
@@ -94,8 +103,9 @@ function create() {
       }
       else {
         do {
+          color = sel_gem(gem_arr);
           field[i][j] = {
-            clr: sel_gem(gem_arr)
+            clr: color
           }
         } while ((field[i][j].clr == field[i-1][j].clr && field[i-1][j].clr == field[i-2][j].clr)||(field[i][j].clr == field[i][j-1].clr && field[i][j-1].clr == field[i][j-2].clr));
         field[i][j].stn = game.add.sprite(i*gem_pixel,j*gem_pixel,field[i][j].clr);
